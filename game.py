@@ -90,8 +90,8 @@ class Board(object):
 
             move_curr = moves[players == self.current_player]
             move_oppo = moves[players != self.current_player]
-            print("debug:", players, self.current_player, players != self.current_player)
-            print("debug:", moves, move_oppo, move_curr)
+            # print("debug:", players, self.current_player, players != self.current_player)
+            # print("debug:", moves, move_oppo, move_curr)
             """
                 debug: [1] 2 [ True]
                 debug: [15] [15] []
@@ -116,6 +116,9 @@ class Board(object):
 
     def do_move(self, move):
         self.states[move] = self.current_player
+        # debug: 19 2 {4: 1, 21: 2, 32: 1, 19: 2}
+        # debug: 7 1 {4: 1, 21: 2, 32: 1, 19: 2, 7: 1}
+        # print("debug:", move, self.states[move], self.states)
         self.availables.remove(move)
         self.current_player = (
             self.players[0] if self.current_player == self.players[1]

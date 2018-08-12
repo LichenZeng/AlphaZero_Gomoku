@@ -184,11 +184,15 @@ class MCTSPlayer(object):
 
     def get_action(self, board, temp=1e-3, return_prob=0):
         sensible_moves = board.availables
+        # print("debug: get_action", len(sensible_moves), sensible_moves)
         # the pi vector returned by MCTS as in the alphaGo Zero paper
         move_probs = np.zeros(board.width * board.height)
         if len(sensible_moves) > 0:
             acts, probs = self.mcts.get_move_probs(board, temp)
+            # print("debug: acts", type(acts), acts, list(acts))
+            # print("debug: probs", type(probs), probs)
             move_probs[list(acts)] = probs
+            # print("debug: move_probs", move_probs)
             if self._is_selfplay:
                 # add Dirichlet Noise for exploration (needed for
                 # self-play training)
@@ -196,6 +200,7 @@ class MCTSPlayer(object):
                     acts,
                     p=0.75 * probs + 0.25 * np.random.dirichlet(0.3 * np.ones(len(probs)))
                 )
+                # print("debug: move/p", move, 0.75 * probs + 0.25 * np.random.dirichlet(0.3 * np.ones(len(probs))))
                 # update the root node and reuse the search tree
                 self.mcts.update_with_move(move)
             else:
