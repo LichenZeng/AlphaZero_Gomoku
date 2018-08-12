@@ -11,6 +11,12 @@ class Board(object):
     """board for the game"""
 
     def __init__(self, **kwargs):
+
+        # debug: 6
+        print("debug:", kwargs.get("width", 8))
+        # debug: dict_items([('width', 6), ('height', 6), ('n_in_row', 4)])
+        print("debug:", kwargs.items())
+
         self.width = int(kwargs.get('width', 8))
         self.height = int(kwargs.get('height', 8))
         # board states stored as a dict,
@@ -133,6 +139,8 @@ class Game(object):
     """game server"""
 
     def __init__(self, board, **kwargs):
+        # debug: <class 'game.Board'>
+        print("debug:", type(board))
         self.board = board
 
     def graphic(self, board, player1, player2):

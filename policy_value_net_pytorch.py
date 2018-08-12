@@ -72,11 +72,26 @@ class PolicyValueNet():
             self.policy_value_net = Net(board_width, board_height).cuda()
         else:
             self.policy_value_net = Net(board_width, board_height)
+        print("debug:", self.policy_value_net)
+        """
+        debug: Net(
+          (conv1): Conv2d(4, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (conv2): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (conv3): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+          (act_conv1): Conv2d(128, 4, kernel_size=(1, 1), stride=(1, 1))
+          (act_fc1): Linear(in_features=144, out_features=36, bias=True)    # 4 x width x height
+          (val_conv1): Conv2d(128, 2, kernel_size=(1, 1), stride=(1, 1))
+          (val_fc1): Linear(in_features=72, out_features=64, bias=True)    # 2 x width x height
+          (val_fc2): Linear(in_features=64, out_features=1, bias=True)
+        )
+        """
         self.optimizer = optim.Adam(self.policy_value_net.parameters(),
                                     weight_decay=self.l2_const)
 
         if model_file:
             net_params = torch.load(model_file)
+            # debug: <class 'collections.OrderedDict'>
+            print("debug:", type(net_params))
             self.policy_value_net.load_state_dict(net_params)
 
     def policy_value(self, state_batch):

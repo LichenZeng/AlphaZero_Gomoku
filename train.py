@@ -12,10 +12,8 @@ from collections import defaultdict, deque
 from game import Board, Game
 from mcts_pure import MCTSPlayer as MCTS_Pure
 from mcts_alphaZero import MCTSPlayer
-from policy_value_net import PolicyValueNet  # Theano and Lasagne
-
-
-# from policy_value_net_pytorch import PolicyValueNet  # Pytorch
+# from policy_value_net import PolicyValueNet  # Theano and Lasagne
+from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 # from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
 # from policy_value_net_keras import PolicyValueNet # Keras
 
@@ -39,6 +37,7 @@ class TrainPipeline():
         self.buffer_size = 10000
         self.batch_size = 512  # mini-batch size for training
         self.data_buffer = deque(maxlen=self.buffer_size)
+        print("debug:", self.data_buffer)  # debug: deque([], maxlen=10000)
         self.play_batch_size = 1
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
