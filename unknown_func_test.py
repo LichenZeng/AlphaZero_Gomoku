@@ -9,3 +9,13 @@ print("======")
 print(square_state[:, ::-1, :])
 print("======")
 print(square_state[:, :, ::-1])
+
+# List remove
+availables = list(range(10))
+print("show:", availables)
+availables.remove(3)
+print("show1:", availables)
+availables.remove(6)
+print("show2:", availables)
+availables.remove(3)  # ValueError: list.remove(x): x not in list
+print("show3:", availables)
