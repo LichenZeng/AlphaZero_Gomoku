@@ -65,10 +65,44 @@ class Board(object):
         """
 
         square_state = np.zeros((4, self.width, self.height))
+        # print("debug: current_state\n", self.states)
         if self.states:
             moves, players = np.array(list(zip(*self.states.items())))
+
+            # import time
+            # print("debug:", moves, players)
+            # states = self.states
+            # states_items = states.items()
+            # print("debug:", type(states), states)
+            # print("debug:", type(states_items), states_items)
+            # print("debug:", type(*states_items), *states_items)
+            # print("debug:", type(zip(*states_items)), zip(*states_items))
+            # print("debug:", type(list(zip(*states_items))), list(zip(*states_items)))
+            # time.sleep(1)
+            """
+                debug: [30] [1]
+                debug: <class 'dict'> {30: 1}
+                debug: <class 'dict_items'> dict_items([(30, 1)])
+                debug: <class 'tuple'> (30, 1)
+                debug: <class 'zip'> <zip object at 0x7f45ddb14cc8>
+                debug: <class 'list'> [(30,), (1,)]
+            """
+
             move_curr = moves[players == self.current_player]
             move_oppo = moves[players != self.current_player]
+            print("debug:", players, self.current_player, players != self.current_player)
+            print("debug:", moves, move_oppo, move_curr)
+            """
+                debug: [1] 2 [ True]
+                debug: [15] [15] []
+                debug: [1 2] 1 [False  True]
+                debug: [18 35] [35] [18]
+                debug: [1 2 1] 2 [ True False  True]
+                debug: [17 35 34] [17 34] [35]
+                debug: [1 2 1 2 1] 2 [ True False  True False  True]
+                debug: [ 0 14 15 28 29] [ 0 15 29] [14 28]
+            """
+
             square_state[0][move_curr // self.width,
                             move_curr % self.height] = 1.0
             square_state[1][move_oppo // self.width,
@@ -78,7 +112,7 @@ class Board(object):
                             self.last_move % self.height] = 1.0
         if len(self.states) % 2 == 0:
             square_state[3][:, :] = 1.0  # indicate the colour to play
-        return square_state[:, ::-1, :]
+        return square_state[:, ::-1, :]  # Do array mirror rotation at axis 1
 
     def do_move(self, move):
         self.states[move] = self.current_player
@@ -206,6 +240,19 @@ class Game(object):
             move, move_probs = player.get_action(self.board,
                                                  temp=temp,
                                                  return_prob=1)
+            print("debug:", type(move), move.shape, type(move_probs), move_probs.shape)
+            print("debug:", move)
+            print("debug:", move_probs)
+            """
+                debug: <class 'numpy.int64'> () <class 'numpy.ndarray'> (36,)
+                debug: 27
+                debug: [0.02506266 0.03007519 0.02506266 0.02756892 0.02756892 0.03007519
+                 0.02756892 0.02756892 0.02756892 0.02756892 0.02756892 0.02756892
+                 0.02756892 0.02756892 0.03007519 0.02756892 0.02506266 0.02506266
+                 0.02506266 0.02756892 0.02756892 0.03007519 0.02756892 0.03007519
+                 0.02756892 0.02756892 0.02756892 0.02756892 0.02756892 0.02756892
+                 0.03007519 0.03007519 0.02756892 0.02756892 0.02756892 0.03007519]
+            """
             # store the data
             states.append(self.board.current_state())
             mcts_probs.append(move_probs)
