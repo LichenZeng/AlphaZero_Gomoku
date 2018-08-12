@@ -84,6 +84,7 @@ def im2col_indices(x, field_height, field_width, padding=1, stride=1):
 
 class PolicyValueNetNumpy():
     """policy-value network in numpy """
+
     def __init__(self, board_width, board_height, net_params):
         self.board_width = board_width
         self.board_height = board_height
@@ -101,7 +102,7 @@ class PolicyValueNetNumpy():
         X = current_state.reshape(-1, 4, self.board_width, self.board_height)
         # first 3 conv layers with ReLu nonlinearity
         for i in [0, 2, 4]:
-            X = relu(conv_forward(X, self.params[i], self.params[i+1]))
+            X = relu(conv_forward(X, self.params[i], self.params[i + 1]))
         # policy head
         X_p = relu(conv_forward(X, self.params[6], self.params[7], padding=0))
         X_p = fc_forward(X_p.flatten(), self.params[8], self.params[9])
