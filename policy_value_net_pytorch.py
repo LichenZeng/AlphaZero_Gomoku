@@ -72,7 +72,7 @@ class PolicyValueNet():
             self.policy_value_net = Net(board_width, board_height).cuda()
         else:
             self.policy_value_net = Net(board_width, board_height)
-        print("debug:", self.policy_value_net)
+        # print("debug:", self.policy_value_net)
         """
         debug: Net(
           (conv1): Conv2d(4, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
@@ -91,7 +91,7 @@ class PolicyValueNet():
         if model_file:
             net_params = torch.load(model_file)
             # debug: <class 'collections.OrderedDict'>
-            print("debug:", type(net_params))
+            # print("debug:", type(net_params))
             self.policy_value_net.load_state_dict(net_params)
 
     def policy_value(self, state_batch):
@@ -148,8 +148,27 @@ class PolicyValueNet():
             log_act_probs, value = self.policy_value_net(
                 Variable(torch.from_numpy(current_state)).float())
             act_probs = np.exp(log_act_probs.data.numpy().flatten())
+
+        # print("debug: pvf", legal_positions)
+        # print("debug: pvf,", value, log_act_probs, act_probs)
+        """
+        debug: pvf [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35]
+        debug: pvf, tensor([[-0.1340]]) tensor([[-3.5891, -3.6159, -3.6483, -3.6113, -3.5677, -3.6311, -3.5342,
+                 -3.6449, -3.6345, -3.5444, -3.5193, -3.5488, -3.5690, -3.6075,
+                 -3.6792, -3.6329, -3.5296, -3.6544, -3.5786, -3.5870, -3.5027,
+                 -3.5944, -3.5537, -3.6383, -3.6251, -3.5364, -3.5302, -3.6542,
+                 -3.6004, -3.6269, -3.5623, -3.5152, -3.5181, -3.5594, -3.5809,
+                 -3.5221]]) [0.02762223 0.02689152 0.02603547 0.02701722 0.02822023 0.02648623
+         0.02918113 0.02612401 0.02639725 0.02888605 0.02961869 0.02876004
+         0.02818486 0.02711975 0.02524304 0.0264391  0.02931764 0.02587646
+         0.02791596 0.02768259 0.030115   0.02747608 0.0286187  0.0262969
+         0.02664538 0.02911758 0.02930048 0.02588317 0.02731332 0.02659828
+         0.02837263 0.02974232 0.02965699 0.02845607 0.02785116 0.02953648]
+        """
         act_probs = zip(legal_positions, act_probs[legal_positions])
         value = value.data[0][0]
+        # # debug: pvf value tensor(-0.1340)
+        # print("debug: pvf value", value)
         return act_probs, value
 
     def train_step(self, state_batch, mcts_probs, winner_batch, lr):
@@ -183,6 +202,12 @@ class PolicyValueNet():
         entropy = -torch.mean(
             torch.sum(torch.exp(log_act_probs) * log_act_probs, 1)
         )
+        # print("debug:", loss, loss.data[0], "{:.5f} |x {:.5f}".format(loss.data[0], loss))
+        # print("debug:", entropy, entropy.data[0])
+        """
+            debug: tensor(4.1732) tensor(4.1732) 4.17323 |x 4.17323
+            debug: tensor(3.5791) tensor(3.5791)
+        """
         return loss.data[0], entropy.data[0]
 
     def get_policy_param(self):

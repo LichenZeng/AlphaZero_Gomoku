@@ -39,7 +39,7 @@ class TrainPipeline():
         self.buffer_size = 10000
         self.batch_size = 512  # mini-batch size for training
         self.data_buffer = deque(maxlen=self.buffer_size)
-        print("debug:", self.data_buffer)  # debug: deque([], maxlen=10000)
+        # print("debug:", self.data_buffer)  # debug: deque([], maxlen=10000)
         self.play_batch_size = 1
         self.epochs = 5  # num of train_steps for each update
         self.kl_targ = 0.02
@@ -68,6 +68,7 @@ class TrainPipeline():
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
         extend_data = []
+        print("debug: len", len(play_data))
         for state, mcts_porb, winner in play_data:
             for i in [1, 2, 3, 4]:
                 # rotate counterclockwise
@@ -112,11 +113,11 @@ class TrainPipeline():
         winner_batch = [data[2] for data in mini_batch]
         # print("debug:", type(state_batch), len(state_batch))
         # print("debug:", type(mcts_probs_batch), len(mcts_probs_batch))
-        # print("debug:", type(winner_batch), len(winner_batch))
+        # print("debug:", type(winner_batch), len(winner_batch), winner_batch[0])
         """
             debug: <class 'list'> 512
             debug: <class 'list'> 512
-            debug: <class 'list'> 512 
+            debug: <class 'list'> 512 1.0
         """
 
         old_probs, old_v = self.policy_value_net.policy_value(state_batch)

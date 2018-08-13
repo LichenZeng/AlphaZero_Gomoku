@@ -45,3 +45,13 @@ print(a)
 # random sample
 sam = random.sample([[1, 2, 3], [5, 3, 1], [6, 8, 9], [3, 4, 3], [5, 1, 1], [6, 9, 9]], 6)
 print(sam)
+
+x = np.arange(6).reshape(2, 3)
+x = np.array([1, 3, 5, 7, 9, 2]).reshape(2, 3)
+print(x)
+y = np.ascontiguousarray(x, dtype=np.float32)
+print(y)
+# array([[0., 1., 2.],
+#        [3., 4., 5.]], dtype=float32)
+flag = x.flags['C_CONTIGUOUS']
+print(flag)
