@@ -14,6 +14,8 @@ from mcts_pure import MCTSPlayer as MCTS_Pure
 from mcts_alphaZero import MCTSPlayer
 # from policy_value_net import PolicyValueNet  # Theano and Lasagne
 from policy_value_net_pytorch import PolicyValueNet  # Pytorch
+
+
 # from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
 # from policy_value_net_keras import PolicyValueNet # Keras
 
@@ -69,6 +71,14 @@ class TrainPipeline():
         for state, mcts_porb, winner in play_data:
             for i in [1, 2, 3, 4]:
                 # rotate counterclockwise
+                # print("debug:", type(state), state.shape)
+                # print("debug:", type(mcts_porb), mcts_porb.shape)
+                # print("debug:", type(winner), winner)
+                """
+                    debug: <class 'numpy.ndarray'> (4, 6, 6)
+                    debug: <class 'numpy.ndarray'> (36,)
+                    debug: <class 'numpy.float64'> 1.0
+                """
                 equi_state = np.array([np.rot90(s, i) for s in state])
                 equi_mcts_prob = np.rot90(np.flipud(
                     mcts_porb.reshape(self.board_height, self.board_width)), i)
@@ -100,6 +110,15 @@ class TrainPipeline():
         state_batch = [data[0] for data in mini_batch]
         mcts_probs_batch = [data[1] for data in mini_batch]
         winner_batch = [data[2] for data in mini_batch]
+        # print("debug:", type(state_batch), len(state_batch))
+        # print("debug:", type(mcts_probs_batch), len(mcts_probs_batch))
+        # print("debug:", type(winner_batch), len(winner_batch))
+        """
+            debug: <class 'list'> 512
+            debug: <class 'list'> 512
+            debug: <class 'list'> 512 
+        """
+
         old_probs, old_v = self.policy_value_net.policy_value(state_batch)
         for i in range(self.epochs):
             loss, entropy = self.policy_value_net.train_step(

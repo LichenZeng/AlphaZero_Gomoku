@@ -243,9 +243,9 @@ class Game(object):
             move, move_probs = player.get_action(self.board,
                                                  temp=temp,
                                                  return_prob=1)
-            print("debug:", type(move), move.shape, type(move_probs), move_probs.shape)
-            print("debug:", move)
-            print("debug:", move_probs)
+            # print("debug:", type(move), move.shape, type(move_probs), move_probs.shape)
+            # print("debug:", move)
+            # print("debug:", move_probs)
             """
                 debug: <class 'numpy.int64'> () <class 'numpy.ndarray'> (36,)
                 debug: 27
@@ -268,9 +268,13 @@ class Game(object):
             if end:
                 # winner from the perspective of the current player of each state
                 winners_z = np.zeros(len(current_players))
+                # debug: [1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1] 1
+                # print("debug:", current_players, winner)
                 if winner != -1:
                     winners_z[np.array(current_players) == winner] = 1.0
                     winners_z[np.array(current_players) != winner] = -1.0
+                # debug: [ 1. -1.  1. -1.  1. -1.  1. -1.  1. -1.  1. -1.  1. -1.  1. -1.  1.]
+                # print("debug:", winners_z)
                 # reset MCTS root node
                 player.reset_player()
                 if is_shown:

@@ -108,6 +108,27 @@ class PolicyValueNet():
             state_batch = Variable(torch.FloatTensor(state_batch))
             log_act_probs, value = self.policy_value_net(state_batch)
             act_probs = np.exp(log_act_probs.data.numpy())
+            # print("debug: pv", type(state_batch), state_batch.shape)
+            # print("debug: pv", type(log_act_probs), log_act_probs.shape, log_act_probs[0])
+            # print("debug: pv", type(value), value.shape, value[0])
+            # print("debug: pv", type(act_probs), act_probs.shape, act_probs[0])
+            """
+            debug: pv <class 'torch.Tensor'> torch.Size([512, 4, 6, 6])
+            debug: pv <class 'torch.Tensor'> torch.Size([512, 36]) tensor([-3.5188, -3.6358, -3.5779, -3.6464, -3.6030, -3.6298, -3.5478,
+                    -3.5090, -3.5997, -3.5677, -3.5541, -3.6722, -3.5616, -3.5636,
+                    -3.5926, -3.4936, -3.5709, -3.6210, -3.5447, -3.6076, -3.5882,
+                    -3.5600, -3.4815, -3.5765, -3.6788, -3.6113, -3.5063, -3.6241,
+                    -3.5781, -3.5612, -3.5779, -3.6497, -3.6608, -3.6400, -3.5247,
+                    -3.6140])
+            debug: pv <class 'torch.Tensor'> torch.Size([512, 1]) tensor(1.00000e-02 *
+                   [ 2.5594])
+            debug: pv <class 'numpy.ndarray'> (512, 36) [0.02963571 0.02636158 0.02793355 0.02608529 0.02724108 0.02652155
+             0.02878688 0.0299259  0.02733225 0.02821934 0.02860781 0.02542085
+             0.02839345 0.02833655 0.02752793 0.03039031 0.02813084 0.02675619
+             0.0288761  0.02711727 0.02764767 0.02843794 0.03076018 0.02797232
+             0.02525269 0.02701536 0.03000749 0.02667333 0.02792769 0.02840393
+             0.0279335  0.02599909 0.02571266 0.02625342 0.02945924 0.02694306]
+            """
             return act_probs, value.data.numpy()
 
     def policy_value_fn(self, board):
