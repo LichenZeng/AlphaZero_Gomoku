@@ -13,15 +13,17 @@ class Board(object):
     def __init__(self, **kwargs):
 
         # debug: 6
-        print("debug:", kwargs.get("width", 8))
+        # print("debug:", kwargs.get("width", 8))
         # debug: dict_items([('width', 6), ('height', 6), ('n_in_row', 4)])
-        print("debug:", kwargs.items())
+        # print("debug:", kwargs.items())
 
         self.width = int(kwargs.get('width', 8))
         self.height = int(kwargs.get('height', 8))
         # board states stored as a dict,
         # key: move as location on the board,
         # value: player as pieces type
+        # debug: <class 'dict'> {33: 1, 34: 2, 35: 1}
+        # debug: <class 'dict'> {16: 1, 30: 2, 34: 2, 35: 1, 21: 1, 24: 2, 26: 1, 13: 2, 14: 2, 5: 1}
         self.states = {}
         # need how many pieces in a row to win
         self.n_in_row = int(kwargs.get('n_in_row', 5))
@@ -71,9 +73,9 @@ class Board(object):
 
             # import time
             # print("debug:", moves, players)
-            # states = self.states
+            states = self.states
             # states_items = states.items()
-            # print("debug:", type(states), states)
+            print("debug:", type(states), states)
             # print("debug:", type(states_items), states_items)
             # print("debug:", type(*states_items), *states_items)
             # print("debug:", type(zip(*states_items)), zip(*states_items))
@@ -177,7 +179,7 @@ class Game(object):
 
     def __init__(self, board, **kwargs):
         # debug: <class 'game.Board'>
-        print("debug:", type(board))
+        # print("debug:", type(board))
         self.board = board
 
     def graphic(self, board, player1, player2):
