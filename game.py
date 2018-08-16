@@ -73,9 +73,9 @@ class Board(object):
 
             # import time
             # print("debug:", moves, players)
-            states = self.states
+            # states = self.states
             # states_items = states.items()
-            print("debug:", type(states), states)
+            # print("debug:", type(states), states)
             # print("debug:", type(states_items), states_items)
             # print("debug:", type(*states_items), *states_items)
             # print("debug:", type(zip(*states_items)), zip(*states_items))

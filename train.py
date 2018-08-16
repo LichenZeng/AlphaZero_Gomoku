@@ -68,7 +68,7 @@ class TrainPipeline():
         play_data: [(state, mcts_prob, winner_z), ..., ...]
         """
         extend_data = []
-        print("debug: len", len(play_data))
+        # print("debug: len", len(play_data))
         for state, mcts_porb, winner in play_data:
             for i in [1, 2, 3, 4]:
                 # rotate counterclockwise
