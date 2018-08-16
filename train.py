@@ -21,7 +21,7 @@ from policy_value_net_pytorch import PolicyValueNet  # Pytorch
 
 
 class TrainPipeline():
-    def __init__(self, init_model=None):
+    def __init__(self, init_model=None, use_gpu=False):
         # params of the board and the game
         self.board_width = 6
         self.board_height = 6
@@ -53,11 +53,13 @@ class TrainPipeline():
             # start training from an initial policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
                                                    self.board_height,
-                                                   model_file=init_model)
+                                                   model_file=init_model,
+                                                   use_gpu=use_gpu)
         else:
             # start training from a new policy-value net
             self.policy_value_net = PolicyValueNet(self.board_width,
-                                                   self.board_height)
+                                                   self.board_height,
+                                                   use_gpu=use_gpu)
         self.mcts_player = MCTSPlayer(self.policy_value_net.policy_value_fn,
                                       c_puct=self.c_puct,
                                       n_playout=self.n_playout,
@@ -212,5 +214,5 @@ class TrainPipeline():
 
 
 if __name__ == '__main__':
-    training_pipeline = TrainPipeline()
+    training_pipeline = TrainPipeline(init_model="./best_policy.model", use_gpu=True)
     training_pipeline.run()
