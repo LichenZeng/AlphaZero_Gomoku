@@ -141,18 +141,20 @@ class OXOState:
         """ Get the game result from the viewpoint of playerjm. 
         """
         for (x, y, z) in [(0, 1, 2), (3, 4, 5), (6, 7, 8), (0, 3, 6), (1, 4, 7), (2, 5, 8), (0, 4, 8), (2, 4, 6)]:
-            if self.board[x] == self.board[y] == self.board[z]:
+            if self.board[x] == self.board[y] == self.board[z] != 0:
                 if self.board[x] == playerjm:
                     return 1.0
                 else:
-                    return 0.0
-        if self.GetMoves() == []: return 0.5  # draw
+                    return -1.0
+        if self.GetMoves() == []: return 0.0  # draw
+        return -2.0
         assert False  # Should not be possible to get here
 
     def __repr__(self):
         s = ""
         for i in range(9):
-            s += ".XO"[self.board[i]]
+            x = ".XO"[self.board[i]]
+            s += "{0:2}".format(x)
             if i % 3 == 2: s += "\n"
         return s
 
@@ -292,12 +294,21 @@ class Node:
         self.untriedMoves = state.GetMoves()  # future child nodes
         self.playerJustMoved = state.playerJustMoved  # the only part of the state that the Node needs later
 
-    def UCTSelectChild(self):
+    def UCTSelectChild(self, playerjm):
         """ Use the UCB1 formula to select a child node. Often a constant UCTK is applied so we have
             lambda c: c.wins/c.visits + UCTK * sqrt(2*log(self.visits)/c.visits to vary the amount of
             exploration versus exploitation.
         """
-        s = sorted(self.childNodes, key=lambda c: c.wins / c.visits + sqrt(2 * log(self.visits) / c.visits))[-1]
+        s = max(self.childNodes, key=lambda c: c.wins / c.visits + sqrt(2 * log(self.visits) / c.visits))
+        # print("ssss", s[-1])
+        # m = max(self.childNodes, key=lambda c: c.wins / c.visits + sqrt(2 * log(self.visits) / c.visits))
+        # print("mmmm", m)
+
+        # if playerjm == self.playerJustMoved:
+        #     s = max(self.childNodes, key=lambda c: c.wins / c.visits + sqrt(2 * log(self.visits) / c.visits))
+        # else:
+        #     s = min(self.childNodes, key=lambda c: (1 - c.wins / c.visits) + sqrt(2 * log(self.visits) / c.visits))
+        # # print("zeng>>: it turn to opponent")
         return s
 
     def AddChild(self, m, s):
@@ -319,16 +330,21 @@ class Node:
         return "[M:" + str(self.move) + " W/V:" + str(self.wins) + "/" + str(self.visits) + " U:" + str(
             self.untriedMoves) + "]"
 
-    def TreeToString(self, indent):
-        s = self.IndentString(indent) + str(self)
+    def TreeToString(self, indent, flag=False):
+        if flag == True:
+            s = self.IndentString(indent) + str(self) + " " + str(
+                self.wins / self.visits + sqrt(2 * log(self.visits) / self.parentNode.visits))
+        else:
+            s = self.IndentString(indent) + str(self)
         for c in self.childNodes:
-            s += c.TreeToString(indent + 1)
+            s += c.TreeToString(indent + 1, flag=True)
+            # + str(c.wins / c.visits + 0.8 * sqrt(2 * log(self.visits) / c.visits)) + "  "
         return s
 
     def IndentString(self, indent):
         s = "\n"
         for i in range(1, indent + 1):
-            s += "| "
+            s += "|   "
         return s
 
     def ChildrenToString(self):
@@ -347,21 +363,23 @@ def UCT(rootstate, itermax, verbose=False):
 
     for i in range(itermax):
         node = rootnode
+        playerjm = rootnode.playerJustMoved
         state = rootstate.Clone()
 
         # Select
         while node.untriedMoves == [] and node.childNodes != []:  # node is fully expanded and non-terminal
-            node = node.UCTSelectChild()
+            node = node.UCTSelectChild(playerjm)
             state.DoMove(node.move)
 
         # Expand
-        if node.untriedMoves != []:  # if we can expand (i.e. state/node is non-terminal)
+        if node.untriedMoves != [] and state.GetResult(
+                playerjm) < -1.0:  # if we can expand (i.e. state/node is non-terminal)
             m = random.choice(node.untriedMoves)
             state.DoMove(m)
             node = node.AddChild(m, state)  # add child and descend tree
 
         # Rollout - this can often be made orders of magnitude quicker using a state.GetRandomMove() function
-        while state.GetMoves() != []:  # while state is non-terminal
+        while state.GetMoves() != [] and state.GetResult(state.playerJustMoved) < -1.0:  # while state is non-terminal
             state.DoMove(random.choice(state.GetMoves()))
 
         # Backpropagate
@@ -376,7 +394,7 @@ def UCT(rootstate, itermax, verbose=False):
     else:
         print(rootnode.ChildrenToString())
 
-    return sorted(rootnode.childNodes, key=lambda c: c.visits)[-1].move  # return the move that was most visited
+    return max(rootnode.childNodes, key=lambda c: c.visits).move  # return the move that was most visited
 
 
 def UCTPlayGame():
@@ -386,23 +404,46 @@ def UCTPlayGame():
     # state = OthelloState(4)  # uncomment to play Othello on a square board of the given size
     state = OXOState()  # uncomment to play OXO
     # state = NimState(15)  # uncomment to play Nim with the given number of starting chips
-    while (state.GetMoves() != []):
-        print(str(state))
+    print(str(state))
+    while (state.GetMoves() != []) and state.GetResult(state.playerJustMoved) < -1.0:
         if state.playerJustMoved == 1:
-            m = UCT(rootstate=state, itermax=1000, verbose=False)  # play with values for itermax and verbose = True
+            m = UCT(rootstate=state, itermax=10000, verbose=True)  # play with values for itermax and verbose = True
         else:
-            m = UCT(rootstate=state, itermax=100, verbose=False)
-        print("Best Move: " + str(m) + "\n")
+            m = int(input("Human Input: "))
+            # m = UCT(rootstate=state, itermax=10000, verbose=True)
+        print("Best Move for player {}: {}".format(3 - state.playerJustMoved, m))
         state.DoMove(m)
+        print(str(state))
+
     if state.GetResult(state.playerJustMoved) == 1.0:
         print("Player " + str(state.playerJustMoved) + " wins!")
-    elif state.GetResult(state.playerJustMoved) == 0.0:
-        print("Player " + str(3 - state.playerJustMoved) + " wins!")
+        return state.playerJustMoved
+    elif state.GetResult(state.playerJustMoved) == -1.0:
+        print("Player xx" + str(3 - state.playerJustMoved) + " wins!")
+        return 3 - state.playerJustMoved
     else:
         print("Nobody wins!")
+        return 0
 
 
 if __name__ == "__main__":
     """ Play a single game to the end using UCT for both players. 
     """
+    # p0 = 0
+    # p1 = 0
+    # p2 = 0
+    # for i in range(10000):
+    #     state = UCTPlayGame()
+    #     if state == 0:
+    #         p0 += 1
+    #     elif state == 1:
+    #         p1 += 1
+    #     elif state == 2:
+    #         p2 += 1
+    #     else:
+    #         print("Error!!!")
+    #     if i % 50 == 0:
+    #         print("p0: {}, p1: {}, p2:{}, total: {}".format(p0, p1, p2, p0 + p1 + p2))
+    #
+    # print("p0: {}, p1: {}, p2:{}, total: {}".format(p0, p1, p2, p0 + p1 + p2))
     UCTPlayGame()
