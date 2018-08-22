@@ -190,9 +190,9 @@ class MCTSPlayer(object):
         if len(sensible_moves) > 0:
             acts, probs = self.mcts.get_move_probs(board, temp)
             move_probs[list(acts)] = probs
-            print("debug: acts", type(acts), len(acts), acts)
-            print("debug: probs", type(probs), len(probs), probs)
-            print("debug: move_probs", len(move_probs), move_probs)
+            # print("debug: acts", type(acts), len(acts), acts)
+            # print("debug: probs", type(probs), len(probs), probs)
+            # print("debug: move_probs", len(move_probs), move_probs)
             """
             debug: acts <class 'tuple'> 24 (0, 1, 2, 3, 4, 5, 7, 8, 9, 10, 11, 15, 16, 18, 21, 25, 27, 28, 30, 31, 32, 33, 34, 35)
             debug: probs <class 'numpy.ndarray'> 24 [0.00498753 0.00498753 0.00498753 0.00498753 0.00498753 0.00498753
