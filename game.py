@@ -182,6 +182,16 @@ class Game(object):
         # print("debug:", type(board))
         self.board = board
 
+    def pygame_graphic(self, board, player1, player2):
+        """Draw the board and show game info by pygame"""
+        width = board.width
+        height = board.height
+
+        # debug: <class 'dict'> {16: 1, 30: 2, 34: 2, 35: 1, 21: 1, 24: 2, 26: 1, 13: 2, 14: 2, 5: 1}
+        print(board.states, len(board.states))
+        for pos in board.states:
+            print(pos, board.states[pos])
+
     def graphic(self, board, player1, player2):
         """Draw the board and show game info"""
         width = board.width
@@ -225,6 +235,7 @@ class Game(object):
             self.board.do_move(move)
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
+                self.pygame_graphic(self.board, player1.player, player2.player)
             end, winner = self.board.game_end()
             if end:
                 if is_shown:

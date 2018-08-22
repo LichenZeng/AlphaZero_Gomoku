@@ -12,7 +12,8 @@ USER, AI = 1, 0
 
 WIDTH = 720
 HEIGHT = 720
-GRID_WIDTH = WIDTH // 20
+SIZE = 9
+GRID_WIDTH = WIDTH // SIZE
 FPS = 30
 
 # define colors
@@ -44,26 +45,26 @@ def draw_background(surf):
     for line in rect_lines:
         pygame.draw.line(surf, BLACK, line[0], line[1], 2)
 
-    for i in range(17):
+    for i in range(2, SIZE - 1):
         pygame.draw.line(surf, BLACK,
-                         (GRID_WIDTH * (2 + i), GRID_WIDTH),
-                         (GRID_WIDTH * (2 + i), HEIGHT - GRID_WIDTH))
+                         (GRID_WIDTH * i, GRID_WIDTH),
+                         (GRID_WIDTH * i, HEIGHT - GRID_WIDTH))
         pygame.draw.line(surf, BLACK,
-                         (GRID_WIDTH, GRID_WIDTH * (2 + i)),
-                         (HEIGHT - GRID_WIDTH, GRID_WIDTH * (2 + i)))
+                         (GRID_WIDTH, GRID_WIDTH * i),
+                         (HEIGHT - GRID_WIDTH, GRID_WIDTH * i))
 
-    circle_center = [
-        (GRID_WIDTH * 4, GRID_WIDTH * 4),
-        (WIDTH - GRID_WIDTH * 4, GRID_WIDTH * 4),
-        (WIDTH - GRID_WIDTH * 4, HEIGHT - GRID_WIDTH * 4),
-        (GRID_WIDTH * 4, HEIGHT - GRID_WIDTH * 4),
-        (GRID_WIDTH * 10, GRID_WIDTH * 10)
-    ]
-    # # [(144, 144), (576, 144), (576, 576), (144, 576), (360, 360)]
-    # print(circle_center)
-
-    for cc in circle_center:
-        pygame.draw.circle(surf, BLACK, cc, 5)
+    # circle_center = [
+    #     (GRID_WIDTH * 4, GRID_WIDTH * 4),
+    #     (WIDTH - GRID_WIDTH * 4, GRID_WIDTH * 4),
+    #     (WIDTH - GRID_WIDTH * 4, HEIGHT - GRID_WIDTH * 4),
+    #     (GRID_WIDTH * 4, HEIGHT - GRID_WIDTH * 4),
+    #     (GRID_WIDTH * 10, GRID_WIDTH * 10)
+    # ]
+    # # # [(144, 144), (576, 144), (576, 576), (144, 576), (360, 360)]
+    # # print(circle_center)
+    #
+    # for cc in circle_center:
+    #     pygame.draw.circle(surf, BLACK, cc, 5)
 
 
 def draw_text(surf, text, size, x, y, color=WHITE):
@@ -90,23 +91,23 @@ def move(surf, pos):
             int(round(pos[1] / (GRID_WIDTH + .0))))
     print("coord", grid)
 
-    if grid[0] <= 0 or grid[0] > 19:
+    if grid[0] <= 0 or grid[0] > SIZE - 1:
         return
-    if grid[1] <= 0 or grid[1] > 19:
+    if grid[1] <= 0 or grid[1] > SIZE - 1:
         return
 
     pos = (grid[0] * GRID_WIDTH, grid[1] * GRID_WIDTH)
 
     curr_move = (pos, BLACK)
     movements.append(curr_move)
-    pygame.draw.circle(surf, BLACK, movements[-1][0], 16)
+    pygame.draw.circle(surf, BLACK, movements[-1][0], GRID_WIDTH // 2 - 2)
 
     return curr_move
 
 
 def draw_movements(surf):
     for move in movements[:-1]:
-        pygame.draw.circle(surf, move[1], move[0], 16)
+        pygame.draw.circle(surf, move[1], move[0], GRID_WIDTH // 2 - 2)
         # print(movements)
         # print(type(movements))
         # print(movements[:-1])
@@ -122,7 +123,7 @@ def draw_movements(surf):
         (180, 540)
         """
     if movements:
-        pygame.draw.circle(surf, GREEN, movements[-1][0], 16)
+        pygame.draw.circle(surf, GREEN, movements[-1][0], GRID_WIDTH // 2 - 2)
 
 
 def show_go_screen(surf, winner=None):
@@ -175,37 +176,38 @@ background = pygame.transform.scale(background_img, (WIDTH, HEIGHT))
 back_rect = background.get_rect()
 pygame.mixer.music.play(loops=-1)
 
-while running:
-    if game_over:
-        show_go_screen(screen, winner)
-        game_over = False
-        movements = []
+if __name__ == '__main__':
+    while running:
+        if game_over:
+            show_go_screen(screen, winner)
+            game_over = False
+            movements = []
 
-    # 设置屏幕刷新频率
-    clock.tick(FPS)
+        # 设置屏幕刷新频率
+        clock.tick(FPS)
 
-    # 处理不同事件
-    for event in pygame.event.get():
-        # 检查是否关闭窗口
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            response = move(screen, event.pos)
-            # if response is not None and response[0] is False:
-            #     game_over = True
-            #     winner = response[1]
-            #     continue
+        # 处理不同事件
+        for event in pygame.event.get():
+            # 检查是否关闭窗口
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                response = move(screen, event.pos)
+                # if response is not None and response[0] is False:
+                #     game_over = True
+                #     winner = response[1]
+                #     continue
 
-    # Update
-    all_sprites.update()
+        # Update
+        all_sprites.update()
 
-    # Draw / render
-    # screen.fill(BLACK)
-    all_sprites.draw(screen)
-    draw_background(screen)
-    draw_movements(screen)
+        # Draw / render
+        # screen.fill(BLACK)
+        all_sprites.draw(screen)
+        draw_background(screen)
+        draw_movements(screen)
 
-    # After drawing everything, flip the display
-    pygame.display.flip()
+        # After drawing everything, flip the display
+        pygame.display.flip()
 
-pygame.quit()
+    pygame.quit()
