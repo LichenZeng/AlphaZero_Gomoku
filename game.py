@@ -209,7 +209,7 @@ class Game(object):
             else:
                 curr_move = (pos, WHITE)
             self.display.movements.append(curr_move)
-            self.display.frame_flash()
+        self.display.frame_flash()
 
     def graphic(self, board, player1, player2):
         """Draw the board and show game info"""

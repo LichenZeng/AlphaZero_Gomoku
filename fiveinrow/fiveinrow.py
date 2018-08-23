@@ -142,7 +142,6 @@ class GobangState:
                 pygame.draw.circle(self.screen, GREEN, self.movements[-1][0], GRID_WIDTH // 2 - 2)
             else:
                 pygame.draw.circle(self.screen, self.movements[-1][1], self.movements[-1][0], GRID_WIDTH // 2 - 2)
-        pygame.display.flip()
 
     def show_go_screen(self, winner=None):
         note_height = 10
