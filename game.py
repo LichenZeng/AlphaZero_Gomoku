@@ -179,17 +179,18 @@ class Board(object):
 class Game(object):
     """game server"""
 
-    def __init__(self, board, **kwargs):
+    def __init__(self, board, display, **kwargs):
         # debug: <class 'game.Board'>
         # print("debug:", type(board))
         self.board = board
-        self.display = fiveinrow.GobangState()
+        self.display = display
 
     def pygame_graphic(self, board, player1, player2):
         """Draw the board and show game info by pygame"""
         width = board.width
         height = board.height
 
+        self.display.frame_flash()
         # debug: <class 'dict'> {16: 1, 30: 2, 34: 2, 35: 1, 21: 1, 24: 2, 26: 1, 13: 2, 14: 2, 5: 1}
         # print(board.states, len(board.states))
         for loc in board.states:

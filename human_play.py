@@ -16,6 +16,8 @@ from policy_value_net_numpy import PolicyValueNetNumpy
 # from policy_value_net_tensorflow import PolicyValueNet # Tensorflow
 # from policy_value_net_keras import PolicyValueNet  # Keras
 from policy_value_net_pytorch import PolicyValueNet  # Pytorch
+from fiveinrow import fiveinrow
+from fiveinrow.fiveinrow import GRID_WIDTH, WHITE, BLACK
 
 
 class Human(object):
@@ -23,17 +25,21 @@ class Human(object):
     human player
     """
 
-    def __init__(self):
+    def __init__(self, display):
         self.player = None
+        self.display = display
 
     def set_player_ind(self, p):
         self.player = p
 
     def get_action(self, board):
         try:
-            location = input("Your move: ")
-            if isinstance(location, str):  # for python3
-                location = [int(n, 10) for n in location.split(",")]
+            # location = input("Your move: ")
+            # if isinstance(location, str):  # for python3
+            #     location = [int(n, 10) for n in location.split(",")]
+            print("It is your turn:")
+            location = self.display.get_coordinate()
+            print("\tYour move: {}\n".format(location))
             move = board.location_to_move(location)
         except Exception as e:
             move = -1
@@ -52,7 +58,8 @@ def run():
     model_file = 'current_policy.model'
     try:
         board = Board(width=width, height=height, n_in_row=n)
-        game = Game(board)
+        display = fiveinrow.GobangState()
+        game = Game(board, display)
 
         # ############### human VS AI ###################
         # load the trained policy_value_net in either Theano/Lasagne, PyTorch or TensorFlow
@@ -75,10 +82,10 @@ def run():
         # mcts_player = MCTS_Pure(c_puct=5, n_playout=1000)
 
         # human player, input your move in the format: 2,3
-        human = Human()
+        human = Human(display)
 
         # set start_player=0 for human first
-        game.start_play(human, mcts_player, start_player=1, is_shown=1)
+        game.start_play(human, mcts_player, start_player=0, is_shown=1)
     except KeyboardInterrupt:
         print('\n\rquit')
 

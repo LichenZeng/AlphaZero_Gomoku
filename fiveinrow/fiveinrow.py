@@ -91,10 +91,10 @@ class GobangState:
         self.screen.blit(text_surface, text_rect)
 
     def move(self, pos):
-        print("pos", pos)
+        # print("pos", pos)
         grid = (int(round(pos[0] / (GRID_WIDTH + .0))),
                 int(round(pos[1] / (GRID_WIDTH + .0))))
-        print("coord", grid)
+        # print("coord", grid)
 
         if grid[0] <= 0 or grid[0] > SIZE - 1:
             return
@@ -110,11 +110,38 @@ class GobangState:
 
         return curr_move
 
+    def get_coordinate(self):
+        while True:
+            # 处理不同事件
+            for event in pygame.event.get():
+                # 检查是否关闭窗口
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    # print("pos:", event.pos)
+                    # # pos: (632, 88) = (X, Y) =  W, H --but we need--> H, W
+                    grid = (int(round(event.pos[1] / (GRID_WIDTH + .0))),
+                            int(round(event.pos[0] / (GRID_WIDTH + .0))))
+
+                    # Throw out these invaild boundary points
+                    if grid[0] <= 0 or grid[0] > SIZE - 1:
+                        return
+                    if grid[1] <= 0 or grid[1] > SIZE - 1:
+                        return
+
+                    grid = (grid[0] - 1, grid[1] - 1)  # H, W
+                    # print("coordinate:", grid)
+                    return grid
+
     def draw_movements(self):
         for move in self.movements[:-1]:
             pygame.draw.circle(self.screen, move[1], move[0], GRID_WIDTH // 2 - 2)
         if self.movements:
-            pygame.draw.circle(self.screen, GREEN, self.movements[-1][0], GRID_WIDTH // 2 - 2)
+            # Assume AI use WHITE temporary
+            if self.movements[-1][1] == WHITE:
+                pygame.draw.circle(self.screen, GREEN, self.movements[-1][0], GRID_WIDTH // 2 - 2)
+            else:
+                pygame.draw.circle(self.screen, self.movements[-1][1], self.movements[-1][0], GRID_WIDTH // 2 - 2)
         pygame.display.flip()
 
     def show_go_screen(self, winner=None):
