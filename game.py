@@ -5,6 +5,8 @@
 
 from __future__ import print_function
 import numpy as np
+from fiveinrow import fiveinrow
+from fiveinrow.fiveinrow import GRID_WIDTH, WHITE, BLACK
 
 
 class Board(object):
@@ -181,6 +183,7 @@ class Game(object):
         # debug: <class 'game.Board'>
         # print("debug:", type(board))
         self.board = board
+        self.display = fiveinrow.GobangState()
 
     def pygame_graphic(self, board, player1, player2):
         """Draw the board and show game info by pygame"""
@@ -188,9 +191,24 @@ class Game(object):
         height = board.height
 
         # debug: <class 'dict'> {16: 1, 30: 2, 34: 2, 35: 1, 21: 1, 24: 2, 26: 1, 13: 2, 14: 2, 5: 1}
-        print(board.states, len(board.states))
-        for pos in board.states:
-            print(pos, board.states[pos])
+        # print(board.states, len(board.states))
+        for loc in board.states:
+            # print(loc, board.states[loc])
+            grid = (loc % height + 1, loc // width + 1)
+
+            if grid[0] <= 0 or grid[0] > height:
+                return
+            if grid[1] <= 0 or grid[1] > width:
+                return
+            pos = (grid[0] * GRID_WIDTH, grid[1] * GRID_WIDTH)
+            # print("coordinate: grid: {}, pos: {}".format(grid, pos))
+
+            if board.states[loc] == 1:
+                curr_move = (pos, BLACK)
+            else:
+                curr_move = (pos, WHITE)
+            self.display.movements.append(curr_move)
+            self.display.frame_flash()
 
     def graphic(self, board, player1, player2):
         """Draw the board and show game info"""
@@ -203,7 +221,7 @@ class Game(object):
         for x in range(width):
             print("{0:8}".format(x), end='')
         print('\r\n')
-        for i in range(height - 1, -1, -1):
+        for i in range(height):
             print("{0:4d}".format(i), end='')
             for j in range(width):
                 loc = i * width + j
@@ -227,6 +245,7 @@ class Game(object):
         player2.set_player_ind(p2)
         players = {p1: player1, p2: player2}
         if is_shown:
+            self.pygame_graphic(self.board, player1.player, player2.player)
             self.graphic(self.board, player1.player, player2.player)
         while True:
             current_player = self.board.get_current_player()
