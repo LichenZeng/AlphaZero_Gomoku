@@ -23,21 +23,21 @@ class Human(object):
     human player
     """
 
-    def __init__(self, display):
+    def __init__(self, display=None):
         self.player = None
-        self.display = display
+        # self.display = display
 
     def set_player_ind(self, p):
         self.player = p
 
     def get_action(self, board):
         try:
-            # location = input("Your move: ")
-            # if isinstance(location, str):  # for python3
-            #     location = [int(n, 10) for n in location.split(",")]
-            print("It is your turn:")
-            location = self.display.get_coordinate()
-            print("\tYour move: {}\n".format(location))
+            location = input("Your move: ")
+            if isinstance(location, str):  # for python3
+                location = [int(n, 10) for n in location.split(",")]
+            # print("It is your turn:")
+            # location = self.display.get_coordinate()
+            # print("\tYour move: {}\n".format(location))
             move = board.location_to_move(location)
         except Exception as e:
             move = -1

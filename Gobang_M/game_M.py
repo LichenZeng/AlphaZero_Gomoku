@@ -248,7 +248,7 @@ class Game(object):
         player2.set_player_ind(p2)
         players = {p1: player1, p2: player2}
         if is_shown:
-            self.pygame_graphic(self.board, player1.player, player2.player)
+            # self.pygame_graphic(self.board, player1.player, player2.player)
             self.graphic(self.board, player1.player, player2.player)
         while True:
             current_player = self.board.get_current_player()
@@ -257,7 +257,7 @@ class Game(object):
             self.board.do_move(move)
             if is_shown:
                 self.graphic(self.board, player1.player, player2.player)
-                self.pygame_graphic(self.board, player1.player, player2.player)
+                # self.pygame_graphic(self.board, player1.player, player2.player)
             end, winner = self.board.game_end()
             if end:
                 if is_shown:
